@@ -34,14 +34,14 @@
 </head>
 <body>
     <h1>Fake News Detection System</h1>
-    <form method="POST">
+    <!-- IMPORTANT: now it submits to /predict -->
+    <form method="POST" action="/predict">
         <input type="text" name="news" placeholder="Enter news headline" required>
         <button type="submit">Predict</button>
     </form>
 
-    {% if result %}
-    <div class="result">Prediction: {{ result }}</div>
+    {% if prediction %}
+    <div class="result">Prediction: {{ prediction }}</div>
     {% endif %}
 </body>
 </html>
-
