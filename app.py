@@ -12,8 +12,8 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    text = request.form['text']
-    # Basic preprocessing (optional)
+    # form मधल्या "news" field मधून text घे
+    text = request.form['news']
     text_proc = text.strip()
 
     # Transform
@@ -30,7 +30,6 @@ def predict():
         print("Model predict error:", e)
         return render_template('index.html', prediction="Model error")
 
-    # If model has predict_proba, show probabilities
     proba = None
     try:
         if hasattr(model, "predict_proba"):
@@ -38,7 +37,6 @@ def predict():
     except Exception as e:
         print("predict_proba error:", e)
 
-    # Debug prints to terminal
     print("=== DEBUG PREDICTION ===")
     print("Input text:", text_proc)
     print("Vector shape:", getattr(vect, "shape", None))
@@ -46,25 +44,21 @@ def predict():
     print("Prediction raw:", pred)
     if proba is not None:
         print("Predict_proba:", proba)
-    # If classifier has classes_ attribute, print it
     if hasattr(model, "classes_"):
         print("Model classes_:", model.classes_)
 
-    # Map label to string (adjust based on model.classes_)
-    # Example: if classes_ = [0,1] and 1 means Fake, change accordingly.
     label = str(pred[0])
-    # If your model uses 1 for Fake and 0 for Real, convert:
+
     try:
         if hasattr(model, "classes_"):
-            # If classes_ are numeric, try mapping
             classes = list(model.classes_)
             print("classes list:", classes)
-            # Heuristic: if classes are [0,1] assume 1->Fake
-            if set(classes) == {0,1}:
+            if set(classes) == {0, 1}:
                 label = "Fake News" if pred[0] == 1 else "Real News"
     except Exception as e:
         print("Label mapping error:", e)
 
+    # इथे आपण prediction नावाने template ला पाठवतो
     return render_template('index.html', prediction=label)
 
 if __name__ == "__main__":
